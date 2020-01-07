@@ -142,9 +142,11 @@ describe('parsing with CRLF (window)', function() {
 describe('parsing token length', function() {
   var stdout = null;
   before(function() {
-    stdout = fs.readFileSync(__dirname + '/9_token_length.txt', {
-      encoding: 'utf-8'
-    });
+    stdout = fs
+      .readFileSync(__dirname + '/9_token_length.txt', {
+        encoding: 'utf-8'
+      })
+      .replace(/\r\n/g, '\n');
   });
   it('should return an object with length property', function() {
     var output = parser.parseString(stdout);
@@ -159,8 +161,8 @@ describe('parsing token length', function() {
     );
     output[0].code.should.equal('ddigitalWrite(LED_BUILTIN, HIGH);');
     output[0].adjustedColumn.should.equal(0);
-    output[0].startIndex.should.equal(48);
-    output[0].endIndex.should.equal(181);
-    output[0].tokenLength.should.equal(12);
+    output[0].startIndex.should.equal(47);
+    output[0].endIndex.should.equal(178);
+    output[0].tokenLength.should.equal(13);
   });
 });
