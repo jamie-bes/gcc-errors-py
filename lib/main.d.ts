@@ -9,6 +9,9 @@ export interface Message {
   codeWhitespace?: string;
   code?: string;
 
+  // Length in characters of the token where the error has occurred
+  tokenLength?: number;
+
   adjustedColumn?: number;
   startIndex: number;
   endIndex: number;

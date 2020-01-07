@@ -138,3 +138,29 @@ describe('parsing with CRLF (window)', function() {
     output[0].endIndex.should.equal(182);
   });
 });
+
+describe('parsing token length', function() {
+  var stdout = null;
+  before(function() {
+    stdout = fs.readFileSync(__dirname + '/9_token_length.txt', {
+      encoding: 'utf-8'
+    });
+  });
+  it('should return an object with length property', function() {
+    var output = parser.parseString(stdout);
+
+    output.length.should.equal(1);
+    output[0].filename.should.equal('/sketch/sketch.ino');
+    output[0].line.should.equal(7);
+    output[0].column.should.equal(3);
+    output[0].type.should.equal('error');
+    output[0].text.should.equal(
+      `'ddigitalWrite' was not declared in this scope`
+    );
+    output[0].code.should.equal('ddigitalWrite(LED_BUILTIN, HIGH);');
+    output[0].adjustedColumn.should.equal(0);
+    output[0].startIndex.should.equal(48);
+    output[0].endIndex.should.equal(181);
+    output[0].tokenLength.should.equal(12);
+  });
+});

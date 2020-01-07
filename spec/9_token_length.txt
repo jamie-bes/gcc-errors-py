@@ -1,0 +1,5 @@
+/sketch/sketch.ino: In function 'void loop()':
+/sketch/sketch.ino:7:3: error: 'ddigitalWrite' was not declared in this scope
+   ddigitalWrite(LED_BUILTIN, HIGH);
+   ^~~~~~~~~~~~~
+Error during build: build failed: exit status 1
