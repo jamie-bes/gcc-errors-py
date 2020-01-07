@@ -1,7 +1,7 @@
 export interface Message {
   filename: string;
-  line: string;
-  column: string;
+  line: number;
+  column: number;
   type: string;
   subtype?: string;
   affectedSymbol?: string;
