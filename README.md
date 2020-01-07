@@ -1,4 +1,4 @@
-# gcc output parser library
+# GCC Output Parser Library
 
 [![Build Status](https://travis-ci.org/wokwi/gcc-output-parser.svg?branch=master)](https://travis-ci.org/wokwi/gcc-output-parser)
 
@@ -13,12 +13,12 @@ $ npm install @wokwi/gcc-output-parser
 ## Usage
 
 ```javascript
-var parser = require('@wokwi/gcc-output-parser');
+const parser = require('@wokwi/gcc-output-parser');
 
 console.log(parser.parseString(gccOutput));
 ```
 
-example output:
+Example output:
 
 ```javascript
 [ { filename: '/sketch/sketch.ino',
