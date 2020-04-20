@@ -1,6 +1,6 @@
 {
   "name": "@wokwi/gcc-output-parser",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "GCC output parsing library",
   "main": "lib/main.js",
   "types": "lib/main.d.ts",
