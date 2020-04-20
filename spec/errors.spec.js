@@ -166,3 +166,33 @@ describe('parsing token length', function() {
     output[0].tokenLength.should.equal(13);
   });
 });
+
+describe('error marker prefixed by ~', () => {
+  let stdout = null;
+  before(() => {
+    stdout = fs
+      .readFileSync(__dirname + '/10_middle_marker.txt', {
+        encoding: 'utf-8'
+      })
+      .replace(/\r\n/g, '\n');
+  });
+  it.only('should match the error correctly', () => {
+    var output = parser.parseString(stdout);
+
+    output.length.should.equal(1);
+    output[0].filename.should.equal('/sketch/sketch.ino');
+    output[0].line.should.equal(14);
+    output[0].column.should.equal(44);
+    output[0].type.should.equal('error');
+    output[0].text.should.equal(
+      `invalid operands of types 'float' and 'float' to binary 'operator|'`
+    );
+    output[0].code.should.equal(
+      'float myRebuildFloat = (float) ((float)(b1)|(float)(b2<<8)|(float)(b3<<16)|(float)(b4<<24));'
+    );
+    output[0].adjustedColumn.should.equal(43);
+    output[0].startIndex.should.equal(48);
+    output[0].endIndex.should.equal(302);
+    output[0].tokenLength.should.equal(26);
+  });
+});

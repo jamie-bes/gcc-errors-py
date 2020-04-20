@@ -1,0 +1,5 @@
+/sketch/sketch.ino: In function 'void setup()':
+/sketch/sketch.ino:14:44: error: invalid operands of types 'float' and 'float' to binary 'operator|'
+ float myRebuildFloat = (float) ((float)(b1)|(float)(b2<<8)|(float)(b3<<16)|(float)(b4<<24));
+                                 ~~~~~~~~~~~^~~~~~~~~~~~~~~
+Error during build: exit status 1
