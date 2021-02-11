@@ -176,7 +176,7 @@ describe('error marker prefixed by ~', () => {
       })
       .replace(/\r\n/g, '\n');
   });
-  it.only('should match the error correctly', () => {
+  it('should match the error correctly', () => {
     var output = parser.parseString(stdout);
 
     output.length.should.equal(1);
