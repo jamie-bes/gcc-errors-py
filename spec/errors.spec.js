@@ -196,3 +196,20 @@ describe('error marker prefixed by ~', () => {
     output[0].tokenLength.should.equal(26);
   });
 });
+
+describe('parsing gcc 9.2 errors', () => {
+  let stdout = null;
+  before(() => {
+    stdout = fs.readFileSync(__dirname + '/9_gcc_9.2.txt');
+  });
+  it('should return an object', () => {
+    const output = parser.parseString(stdout);
+
+    output.length.should.equal(14);
+    output[11].type.should.equal('error');
+    output[11].filename.should.equal('201204_fc_recv_1.ino');
+    output[11].line.should.equal(583);
+    output[11].column.should.equal(5);
+    output[11].text.should.equal(`expected declaration before '}' token`);
+  });
+});
