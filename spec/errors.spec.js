@@ -1,16 +1,16 @@
-var fs = require('fs');
-var should = require('should');
-var parser = require('../lib/main.js');
+const fs = require('fs');
+require('should');
+const parser = require('../lib/main.js');
 
 describe('parsing simple errors', function() {
-  var stdout = null;
+  let stdout = null;
   before(function() {
     stdout = fs
       .readFileSync(__dirname + '/1_simple.txt', { encoding: 'utf-8' })
       .replace(/\r\n/g, '\n');
   });
   it('should return an object', function() {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
 
     output.length.should.equal(1);
     output[0].filename.should.equal('HolidayButton.cpp');
@@ -30,14 +30,14 @@ describe('parsing simple errors', function() {
 });
 
 describe('parsing multiple errors', function() {
-  var stdout = null;
+  let stdout = null;
   before(function() {
     stdout = fs
       .readFileSync(__dirname + '/2_multiple.txt', { encoding: 'utf-8' })
       .replace(/\r\n/g, '\n');
   });
   it('should return an object', function() {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
 
     output.length.should.equal(5);
     for (i = 0; i < 5; i++) {
@@ -50,12 +50,12 @@ describe('parsing multiple errors', function() {
 });
 
 describe('parsing advanced errors', function() {
-  var stdout = null;
+  let stdout = null;
   before(function() {
     stdout = fs.readFileSync(__dirname + '/3_advanced.txt');
   });
   it('should return an object', function() {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
     // TODO: Parse inclusion stack
     output.length.should.equal(3);
     output[0].type.should.equal('error');
@@ -65,12 +65,12 @@ describe('parsing advanced errors', function() {
 });
 
 describe('parsing linker errors', function() {
-  var stdout = null;
+  let stdout = null;
   before(function() {
     stdout = fs.readFileSync(__dirname + '/6_linker.txt');
   });
   it('should return an object', function() {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
     i = 3;
     output.length.should.equal(17);
     output[i].type.should.equal('error');
@@ -91,12 +91,12 @@ describe('parsing linker errors', function() {
 });
 
 describe('parsing 0.6.0 errors', function() {
-  var stdout = null;
+  let stdout = null;
   before(function() {
     stdout = fs.readFileSync(__dirname + '/8_dray_0.6.0.txt');
   });
   it('should return an object', function() {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
 
     output.length.should.equal(7);
     output[5].type.should.equal('error');
@@ -113,14 +113,14 @@ describe('parsing 0.6.0 errors', function() {
 });
 
 describe('parsing with CRLF (window)', function() {
-  var stdout = null;
+  let stdout = null;
   before(function() {
     stdout = fs
       .readFileSync(__dirname + '/1_simple.txt', { encoding: 'utf-8' })
       .replace(/\r?\n/g, '\r\n');
   });
   it('should return an object', function() {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
 
     output.length.should.equal(1);
     output[0].filename.should.equal('HolidayButton.cpp');
@@ -140,7 +140,7 @@ describe('parsing with CRLF (window)', function() {
 });
 
 describe('parsing token length', function() {
-  var stdout = null;
+  let stdout = null;
   before(function() {
     stdout = fs
       .readFileSync(__dirname + '/9_token_length.txt', {
@@ -149,7 +149,7 @@ describe('parsing token length', function() {
       .replace(/\r\n/g, '\n');
   });
   it('should return an object with length property', function() {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
 
     output.length.should.equal(1);
     output[0].filename.should.equal('/sketch/sketch.ino');
@@ -177,7 +177,7 @@ describe('error marker prefixed by ~', () => {
       .replace(/\r\n/g, '\n');
   });
   it('should match the error correctly', () => {
-    var output = parser.parseString(stdout);
+    const output = parser.parseString(stdout);
 
     output.length.should.equal(1);
     output[0].filename.should.equal('/sketch/sketch.ino');
