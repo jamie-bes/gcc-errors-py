@@ -1,11 +1,11 @@
 import re
 
 class Message:
-    def __init__(self, filename, line, column, type, text, startIndex, endIndex):
+    def __init__(self, filename, line, column, _type, text, startIndex, endIndex):
         self.filename: str = filename
         self.line: int = line
         self.column: int = column
-        self.type: str = type
+        self.type: str = _type
         self.subtype = None
         self.affectedSymbol = None
         self.text: str = text
@@ -23,39 +23,43 @@ class Message:
 
     @staticmethod
     def fromGcc(components, stdout):
-        new_msg = Message()
+        filename = components[1]
+        line = int(components[2])
+        column = int(components[3])
+        _type = components[4]
+        text = components[5]
+        startIndex = stdout.index(components[0])
+        endIndex = startIndex + len(components[0])
 
-        new_msg.filename = components[1]
-        new_msg.line = int(components[2])
-        new_msg.column = int(components[3])
-        new_msg.type = components[4]
-        new_msg.text = components[5]
+        new_msg = Message(filename, line, column, _type, text, startIndex, endIndex)
+
         new_msg.codeWhitespace = components[6] if components[6] else ''
         new_msg.code = components[7] if components[7] else ''
         if components[8]:
             new_msg.tokenLength = len(components[8])
 
         new_msg.adjustedColumn = new_msg.column - len(new_msg.codeWhitespace)
-        new_msg.startIndex = stdout.index(components[0])
-        new_msg.endIndex = new_msg.startIndex + len(components[0])
         new_msg.parentFunction = new_msg._lookbackFunction(stdout, new_msg.startIndex)
 
         return new_msg
 
     @staticmethod
     def fromLinker(components, stdout):
-        new_msg = Message()
+        subtype = components[3]
+        affectedSymbol = components[5]
 
-        new_msg.filename = components[1]
-        new_msg.line = int(components[2])
-        new_msg.column = 0
-        new_msg.type = "error"
-        new_msg.subtype = components[3]
-        new_msg.affectedSymbol = components[5]
-        new_msg.text = new_msg.subtype + ' ' + components[4] + ' "' + new_msg.affectedSymbol + '"'
+        filename = components[1]
+        line = int(components[2])
+        column = 0
+        _type = "error"
+        text = subtype + ' ' + components[4] + ' "' + affectedSymbol + '"'
+        startIndex = stdout.index(components[0])
+        endIndex = startIndex + len(components[0])
 
-        new_msg.startIndex = stdout.index(components[0])
-        new_msg.endIndex = new_msg.startIndex + len(components[0])
+        new_msg = Message(filename, line, column, _type, text, startIndex, endIndex)
+
+        new_msg.subtype = subtype
+        new_msg.affectedSymbol = affectedSymbol
         new_msg.parentFunction = new_msg._lookbackFunction(stdout, new_msg.startIndex)
 
         if new_msg.subtype == "multiple definition":
@@ -64,14 +68,7 @@ class Message:
         return new_msg
 
     def _matchAll(self, regex, input):
-        matches = []
-        while True:
-            match = re.search(regex, input)
-            if not match:
-                break
-            matches.append(match)
-
-        return matches
+        return re.findall(regex, input)
 
     def _lookbackFunction(self, stdout, index):
         regex = r"In function\s(`|')(.*)'"

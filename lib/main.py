@@ -23,11 +23,8 @@ def parseGcc(stdout):
     #             |             |     +- column
     #             |             +- line
     #             +- filename
-    match = None
-    while True:
-        match = re.search(deepRegex, stdout, re.MULTILINE)
-        if not match:
-            break
+    matches = re.findall(deepRegex, stdout, re.MULTILINE)
+    for match in matches:
         messages.append(Message.fromGcc(match, stdout))
 
     simpleRegex = r"([^:^\r?\n]+):(\d+):(\d+):\s(\w+\s*\w*):\s(.+)\r?\n(?!\s)"      #gm option?
@@ -39,11 +36,8 @@ def parseGcc(stdout):
     #               |             |     +- column
     #               |             +- line
     #               +- filename
-    match = None
-    while True:
-        match = re.search(simpleRegex, stdout, re.MULTILINE)
-        if not match:
-            break
+    matches = re.findall(simpleRegex, stdout, re.MULTILINE)
+    for match in matches:
         messages.append(Message.fromGcc(match, stdout))
 
     return messages
@@ -54,11 +48,8 @@ def parseLinker(stdout):
 
     regex = r"(.*):(\d+):\s(.*)\s(to|of)\s`(.*)'"
 
-    match = None
-    while True:
-        match = re.search(regex, stdout)
-        if not match:
-            break
+    matches = re.findall(regex, stdout)
+    for match in matches:
         messages.append(Message.fromLinker(match, stdout))
 
     return messages
