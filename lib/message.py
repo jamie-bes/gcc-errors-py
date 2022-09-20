@@ -61,29 +61,26 @@ class Message:
 
         return new_msg
 
-    def _matchAll(regex, input):
-        match = None
+    def _matchAll(self, regex, input):
         matches = []
-        while ((match = regex.exec(input))):
-            matches.push(match)
+        while True:
+            match = regex.exec(input)
+            if not match:
+                break
+            matches.append(match)
 
         return matches
 
-    def _lookbackFunction(stdout, index):
+    def _lookbackFunction(self, stdout, index):
         regex = /In function\s(`|')(.*)'/g
-        matches = self._matchAll(regex, stdout.slice(0, index))
-        if (matches.length):
-            return matches.slice(-1)[0][2]
+        matches = self._matchAll(regex, stdout[0:index])
+        if len(matches) > 0:
+            return matches[-1][0][2]
 
-        return
-
-    def _lookupFirstDefinition(stdout, index):
+    def _lookupFirstDefinition(self, stdout, index):
         regex = /:(.*):(\d+): first defined here/g
 
-        matches = self._matchAll(regex, stdout.slice(index))
-        if (matches.length):
-            return {
-                "filename": matches[0][1],
-                "line": parseInt(matches[0][2])
-            }
-        return
+        matches = self._matchAll(regex, stdout[0:index])
+        if len(matches) > 0:
+            location = {"filename": matches[0][1], "line": int(matches[0][2])}
+            return location
