@@ -1,3 +1,5 @@
+import re
+
 class Message:
     def __init__(self, filename, line, column, type, text, startIndex, endIndex):
         self.filename: str = filename
@@ -64,7 +66,7 @@ class Message:
     def _matchAll(self, regex, input):
         matches = []
         while True:
-            match = regex.exec(input)
+            match = re.search(regex, input)
             if not match:
                 break
             matches.append(match)
@@ -72,13 +74,13 @@ class Message:
         return matches
 
     def _lookbackFunction(self, stdout, index):
-        regex = /In function\s(`|')(.*)'/g
+        regex = r"In function\s(`|')(.*)'"
         matches = self._matchAll(regex, stdout[0:index])
         if len(matches) > 0:
             return matches[-1][0][2]
 
     def _lookupFirstDefinition(self, stdout, index):
-        regex = /:(.*):(\d+): first defined here/g
+        regex = r":(.*):(\d+): first defined here"
 
         matches = self._matchAll(regex, stdout[0:index])
         if len(matches) > 0:

@@ -1,7 +1,8 @@
-import message
+import re
+from .message import Message
 
 def parseString(stdout):
-    stdout = stdout.toString()
+    assert type(stdout) == str
 
     messages = [*parseGcc(stdout), *parseLinker(stdout)]
 
@@ -10,43 +11,54 @@ def parseString(stdout):
 
 def parseGcc(stdout):
     messages = []
-    match = None
-    deepRegex = /([^:^\r?\n]+):(\d+):(\d+):\s(\w+\s*\w*):\s(.+)\r?\n(\s+)\d*\s*[|]*\s*(.*)\s+[|]*\s*(~*\^~*)/gm
-    #                  ^             ^     ^       ^             ^        ^    |            ^             ^
-    #                  |             |     |       |             |        |    |            |             +- token marker
-    #                  |             |     |       |             |        |    |            +- affected code
-    #                  |             |     |       |             |        |    +- optional gcc 9.2 markup
-    #                  |             |     |       |             |        +- whitespace before code
-    #                  |             |     |       |             +- message text
-    #                  |             |     |       +- type (error|warning|note)
-    #                  |             |     +- column
-    #                  |             +- line
-    #                  +- filename
-    while ((match = deepRegex.exec(stdout))):
-        messages.push(new Message().fromGcc(match, stdout))
 
-    simpleRegex = /([^:^\r?\n]+):(\d+):(\d+):\s(\w+\s*\w*):\s(.+)\r?\n(?!\s)/gm
-    #                    ^             ^     ^       ^       ^     ^
-    #                    |             |     |       |       |     |
-    #                    |             |     |       |       |     +- whitespace before code
-    #                    |             |     |       |       +- message text
-    #                    |             |     |       +- type (error|warning|note)
-    #                    |             |     +- column
-    #                    |             +- line
-    #                    +- filename
+    deepRegex = r"([^:^\r?\n]+):(\d+):(\d+):\s(\w+\s*\w*):\s(.+)\r?\n(\s+)\d*\s*[|]*\s*(.*)\s+[|]*\s*(~*\^~*)"
+    #             ^             ^     ^       ^             ^        ^    |            ^             ^
+    #             |             |     |       |             |        |    |            |             +- token marker
+    #             |             |     |       |             |        |    |            +- affected code
+    #             |             |     |       |             |        |    +- optional gcc 9.2 markup
+    #             |             |     |       |             |        +- whitespace before code
+    #             |             |     |       |             +- message text
+    #             |             |     |       +- type (error|warning|note)
+    #             |             |     +- column
+    #             |             +- line
+    #             +- filename
     match = None
-    while ((match = simpleRegex.exec(stdout))):
-        messages.push(new Message().fromGcc(match, stdout))
+    while True:
+        match = re.search(deepRegex, stdout, re.MULTILINE)
+        if not match:
+            break
+        messages.append(Message.fromGcc(match, stdout))
+
+    simpleRegex = r"([^:^\r?\n]+):(\d+):(\d+):\s(\w+\s*\w*):\s(.+)\r?\n(?!\s)"      #gm option?
+    #               ^             ^     ^       ^       ^     ^
+    #               |             |     |       |       |     |
+    #               |             |     |       |       |     +- whitespace before code
+    #               |             |     |       |       +- message text
+    #               |             |     |       +- type (error|warning|note)
+    #               |             |     +- column
+    #               |             +- line
+    #               +- filename
+    match = None
+    while True:
+        match = re.search(simpleRegex, stdout, re.MULTILINE)
+        if not match:
+            break
+        messages.append(Message.fromGcc(match, stdout))
 
     return messages
 
 
 def parseLinker(stdout):
-    regex = /(.*):(\d+):\s(.*)\s(to|of)\s`(.*)'/g
-
     messages = []
+
+    regex = r"(.*):(\d+):\s(.*)\s(to|of)\s`(.*)'"
+
     match = None
-    while ((match = regex.exec(stdout))):
-        messages.push(new Message().fromLinker(match, stdout))
+    while True:
+        match = re.search(regex, stdout)
+        if not match:
+            break
+        messages.append(Message.fromLinker(match, stdout))
 
     return messages
