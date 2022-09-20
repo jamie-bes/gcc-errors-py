@@ -1,6 +1,1 @@
-.history
-node_modules
-.DS_Store
-.idea
-npm-debug.log
-dist
+__pycache__/
