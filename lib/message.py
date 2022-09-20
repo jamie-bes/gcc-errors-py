@@ -19,41 +19,47 @@ class Message:
         self.parentFunction = None
         self.firstDefined = None
 
+    @staticmethod
     def fromGcc(components, stdout):
-        self.filename = components[1]
-        self.line = parseInt(components[2])
-        self.column = parseInt(components[3])
-        self.type = components[4]
-        self.text = components[5]
-        self.codeWhitespace = components[6] if components[6] else ''
-        self.code = components[7] if components[7] else ''
-        if (components[8]):
-            self.tokenLength = components[8].length
+        new_msg = Message()
 
-        self.adjustedColumn = self.column - self.codeWhitespace.length
-        self.startIndex = stdout.indexOf(components[0])
-        self.endIndex = self.startIndex + components[0].length
-        self.parentFunction = self._lookbackFunction(stdout, self.startIndex)
+        new_msg.filename = components[1]
+        new_msg.line = int(components[2])
+        new_msg.column = int(components[3])
+        new_msg.type = components[4]
+        new_msg.text = components[5]
+        new_msg.codeWhitespace = components[6] if components[6] else ''
+        new_msg.code = components[7] if components[7] else ''
+        if components[8]:
+            new_msg.tokenLength = len(components[8])
 
-        return self
+        new_msg.adjustedColumn = new_msg.column - len(new_msg.codeWhitespace)
+        new_msg.startIndex = stdout.index(components[0])
+        new_msg.endIndex = new_msg.startIndex + len(components[0])
+        new_msg.parentFunction = new_msg._lookbackFunction(stdout, new_msg.startIndex)
 
+        return new_msg
+
+    @staticmethod
     def fromLinker(components, stdout):
-        self.filename = components[1]
-        self.line = parseInt(components[2])
-        self.column = 0
-        self.type = 'error'
-        self.subtype = components[3]
-        self.affectedSymbol = components[5]
-        self.text = self.subtype + ' ' + components[4] + ' "' + self.affectedSymbol + '"'
+        new_msg = Message()
 
-        self.startIndex = stdout.indexOf(components[0])
-        self.endIndex = self.startIndex + components[0].length
-        self.parentFunction = self._lookbackFunction(stdout, self.startIndex)
+        new_msg.filename = components[1]
+        new_msg.line = int(components[2])
+        new_msg.column = 0
+        new_msg.type = "error"
+        new_msg.subtype = components[3]
+        new_msg.affectedSymbol = components[5]
+        new_msg.text = new_msg.subtype + ' ' + components[4] + ' "' + new_msg.affectedSymbol + '"'
 
-        if (self.subtype == 'multiple definition'):
-            self.firstDefined = self._lookupFirstDefinition(stdout, self.endIndex)
+        new_msg.startIndex = stdout.index(components[0])
+        new_msg.endIndex = new_msg.startIndex + len(components[0])
+        new_msg.parentFunction = new_msg._lookbackFunction(stdout, new_msg.startIndex)
 
-        return self
+        if new_msg.subtype == "multiple definition":
+            new_msg.firstDefined = new_msg._lookupFirstDefinition(stdout, new_msg.endIndex)
+
+        return new_msg
 
     def _matchAll(regex, input):
         match = None
