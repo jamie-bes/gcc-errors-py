@@ -68,7 +68,7 @@ class Message:
         return new_msg
 
     def _matchAll(self, regex, input):
-        return re.findall(regex, input)
+        return list(re.finditer(regex, input))
 
     def _lookbackFunction(self, stdout, index):
         regex = r"In function\s(`|')(.*)'"

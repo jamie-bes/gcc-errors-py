@@ -23,7 +23,7 @@ def parseGcc(stdout):
     #             |             |     +- column
     #             |             +- line
     #             +- filename
-    matches = re.findall(deepRegex, stdout, re.MULTILINE)
+    matches = list(re.finditer(deepRegex, stdout, re.MULTILINE))
     for match in matches:
         messages.append(Message.fromGcc(match, stdout))
 
@@ -36,7 +36,7 @@ def parseGcc(stdout):
     #               |             |     +- column
     #               |             +- line
     #               +- filename
-    matches = re.findall(simpleRegex, stdout, re.MULTILINE)
+    matches = list(re.finditer(simpleRegex, stdout, re.MULTILINE))
     for match in matches:
         messages.append(Message.fromGcc(match, stdout))
 
@@ -48,7 +48,7 @@ def parseLinker(stdout):
 
     regex = r"(.*):(\d+):\s(.*)\s(to|of)\s`(.*)'"
 
-    matches = re.findall(regex, stdout)
+    matches = list(re.finditer(regex, stdout))
     for match in matches:
         messages.append(Message.fromLinker(match, stdout))
 
