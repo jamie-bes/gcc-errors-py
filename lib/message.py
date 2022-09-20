@@ -1,25 +1,26 @@
 import re
+import dataclasses
 
+@dataclasses.dataclass
 class Message:
-    def __init__(self, filename, line, column, _type, text, startIndex, endIndex):
-        self.filename: str = filename
-        self.line: int = line
-        self.column: int = column
-        self.type: str = _type
-        self.subtype = None
-        self.affectedSymbol = None
-        self.text: str = text
-        self.codeWhitespace = None
-        self.code = None
+    filename: str
+    line: int
+    column: int
+    type: str
+    subtype = None
+    affectedSymbol = None
+    text: str
+    codeWhitespace = None
+    code = None
 
-        # Length in characters of the token where the error has occurred
-        self.tokenLength = None
+    # Length in characters of the token where the error has occurred
+    tokenLength = None
 
-        self.adjustedColumn = None
-        self.startIndex: int = startIndex
-        self.endIndex: int = endIndex
-        self.parentFunction = None
-        self.firstDefined = None
+    adjustedColumn = None
+    startIndex: int
+    endIndex: int
+    parentFunction = None
+    firstDefined = None
 
     @staticmethod
     def fromGcc(components, stdout):
