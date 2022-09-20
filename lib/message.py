@@ -1,4 +1,24 @@
 class Message:
+    def __init__(self, filename, line, column, type, text, startIndex, endIndex):
+        self.filename: str = filename;
+        self.line: int = line;
+        self.column: int = column;
+        self.type: str = type;
+        self.subtype = None
+        self.affectedSymbol = None;
+        self.text: str = text;
+        self.codeWhitespace = None;
+        self.code = None;
+
+        # Length in characters of the token where the error has occurred
+        self.tokenLength = None
+
+        self.adjustedColumn = None
+        self.startIndex: int = startIndex;
+        self.endIndex: int = endIndex;
+        self.parentFunction = None
+        self.firstDefined = None
+
     def fromGcc(components, stdout):
         self.filename = components[1];
         self.line = parseInt(components[2]);
