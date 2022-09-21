@@ -1,41 +1,48 @@
 import re
 import dataclasses
+from typing import Optional
 
 @dataclasses.dataclass
 class Message:
     filename: str
     line: int
     column: int
-    type: str
-    subtype = None
-    affectedSymbol = None
+    msgtype: str
     text: str
-    codeWhitespace = None
-    code = None
-
-    # Length in characters of the token where the error has occurred
-    tokenLength = None
-
-    adjustedColumn = None
     startIndex: int
     endIndex: int
-    parentFunction = None
-    firstDefined = None
+
+    subtype: Optional[str] = None
+    affectedSymbol: Optional[str] = None
+
+    codeWhitespace: Optional[str] = None
+    code: Optional[str] = None
+
+    # Length in characters of the token where the error has occurred
+    tokenLength: Optional[int] = None
+
+    adjustedColumn: Optional[int] = None
+
+    parentFunction: Optional[str] = None
+    firstDefined: Optional[str] = None
 
     @staticmethod
     def fromGcc(components, stdout):
-        filename = components[1]
-        line = int(components[2])
-        column = int(components[3])
-        _type = components[4]
-        text = components[5]
         startIndex = stdout.index(components[0])
         endIndex = startIndex + len(components[0])
 
-        new_msg = Message(filename, line, column, _type, text, startIndex, endIndex)
+        new_msg = Message(
+            filename        = components[1],
+            line            = int(components[2]),
+            column          = int(components[3]),
+            msgtype         = components[4],
+            text            = components[5],
+            startIndex      = startIndex,
+            endIndex        = endIndex,
+            codeWhitespace  = components[6] if components[6] else '',
+            code            = components[7] if components[7] else '',
+        )
 
-        new_msg.codeWhitespace = components[6] if components[6] else ''
-        new_msg.code = components[7] if components[7] else ''
         if components[8]:
             new_msg.tokenLength = len(components[8])
 
@@ -48,20 +55,21 @@ class Message:
     def fromLinker(components, stdout):
         subtype = components[3]
         affectedSymbol = components[5]
-
-        filename = components[1]
-        line = int(components[2])
-        column = 0
-        _type = "error"
-        text = subtype + ' ' + components[4] + ' "' + affectedSymbol + '"'
         startIndex = stdout.index(components[0])
         endIndex = startIndex + len(components[0])
 
-        new_msg = Message(filename, line, column, _type, text, startIndex, endIndex)
-
-        new_msg.subtype = subtype
-        new_msg.affectedSymbol = affectedSymbol
-        new_msg.parentFunction = new_msg._lookbackFunction(stdout, new_msg.startIndex)
+        new_msg = Message(
+            filename        = components[1],
+            line            = int(components[2]),
+            column          = 0,
+            msgtype         = "error",
+            text            = subtype + ' ' + components[4] + ' "' + affectedSymbol + '"',
+            startIndex      = startIndex,
+            endIndex        = endIndex,
+            subtype         = subtype,
+            affectedSymbol  = affectedSymbol,
+            parentFunction  = new_msg._lookbackFunction(stdout, new_msg.startIndex),
+        )
 
         if new_msg.subtype == "multiple definition":
             new_msg.firstDefined = new_msg._lookupFirstDefinition(stdout, new_msg.endIndex)
