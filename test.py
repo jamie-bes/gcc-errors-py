@@ -1,5 +1,5 @@
 from pathlib import Path
-from lib.main import parseString
+from lib.parse import parseString
 
 if __name__ == "__main__":
     path = Path(__file__).parent / "spec" / "2_multiple.txt"
