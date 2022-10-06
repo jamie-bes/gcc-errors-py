@@ -68,9 +68,9 @@ class Message:
             endIndex        = endIndex,
             subtype         = subtype,
             affectedSymbol  = affectedSymbol,
-            parentFunction  = new_msg._lookbackFunction(stdout, new_msg.startIndex),
         )
 
+        new_msg.parentFunction = new_msg._lookbackFunction(stdout, new_msg.startIndex)
         if new_msg.subtype == "multiple definition":
             new_msg.firstDefined = new_msg._lookupFirstDefinition(stdout, new_msg.endIndex)
 
